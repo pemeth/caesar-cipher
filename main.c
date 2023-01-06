@@ -10,7 +10,13 @@
 #define CAP_MASK 0xE0           // 0b11100000
 #define LETTER_MASK ~CAP_MASK   // 0b00011111
 
-int caesar_printable(int8_t key)
+/**
+ * @brief Codec function to be used for processing all printable
+ * ASCII characters.
+ *
+ * @param key the cipher key
+ */
+void caesar_printable(int8_t key)
 {
     char input;
     char encoded;
@@ -18,7 +24,7 @@ int caesar_printable(int8_t key)
     size_t const input_num = 1;
 
     while (fread(&input, input_len, input_num, stdin) == input_len) {
-        encoded = input; // TODO it is possible to use only one variable
+        encoded = input;
 
         if (input >= 32 && input <= 126) {
             // Printables
@@ -31,14 +37,16 @@ int caesar_printable(int8_t key)
             encoded = shifted + PRINTABLE_START;
         }
 
-        // TODO test if this would be quicker through a buffer print (it would)
         printf("%c", encoded);
     }
-
-    return 0;
 }
 
-int caesar_alpha(int8_t key)
+/**
+ * @brief Codec function to be used for processing only alphabet characters.
+ *
+ * @param key the cipher key
+ */
+void caesar_alpha(int8_t key)
 {
     char input;
     char encoded;
@@ -66,16 +74,21 @@ int caesar_alpha(int8_t key)
 
         printf("%c", encoded);
     }
-
-    return 0;
 }
 
-int caesar(int8_t key, char alphabet, char codec_toggle)
+/**
+ * @brief Encodes a message from `stdin` based on specified options.
+ *
+ * @param key the cipher key
+ * @param alphabet 'a' for alphabet only, 'p' for all printables
+ * @param codec_toggle 'e' for encoding, 'd' for decoding
+ */
+void caesar(int8_t key, char alphabet, char codec_toggle)
 {
-    // Calculate key module based on alphabet used
+    // Calculate key modulo based on alphabet used
     int key_mod = alphabet == 'a' ? key % ALPHA_SIZE : key % PRINTABLE_SIZE;
 
-    // If the -d option was entered, find the reverse key to entered key
+    // If the -d option was entered, find the reverse key to the entered key
     key = codec_toggle == 'd' ? key_mod * (-1) : key_mod;
 
     // Encode based on alphabet
@@ -84,8 +97,6 @@ int caesar(int8_t key, char alphabet, char codec_toggle)
     } else { /* alphabet == 'p' */
         caesar_printable(key);
     }
-
-    return 0;
 }
 
 int main(int argc, char* const argv[])
