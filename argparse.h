@@ -7,12 +7,16 @@ typedef struct progopts
 {
     int8_t key;             //!< Key for the cipher
     char alphabet_toggle;   //!< Toggles alphabet / printable characters
+    uint8_t help_flag;      //!< Set if help is printed
 } progopts_t;
 
 void print_help(char * const binary_name)
 {
     printf("Usage: %s [-k key] [-p]\n", binary_name);
-    printf("Encode a message via the ceasar cipher with specified key.\n");
+    printf("Encode a message via the ceasar cipher with the specified key.\n");
+    printf("\n");
+    printf("Encodes only characters of the alphabet unless -p is specified,\n");
+    printf("in which case all printable characters are encoded.\n");
     printf("\n");
     printf(
         "  -k key\tuse this cipher key (may be [%d,%d], defaults to 1)\n",
@@ -34,11 +38,19 @@ int argparse(int argc, char * const argv[], progopts_t *options)
         case 'k':
             // Key to the cipher
             errno = 0;
-            options->key = strtol(optarg, &endptr, base);
+            long const parsed_key = strtol(optarg, &endptr, base);
+
             if (errno == ERANGE || errno == EINVAL) {
-                fprintf(stderr, "Invalid key value\n");
+                fprintf(stderr, "Key value error\n");
+                return -2;
+            }
+            if (parsed_key < INT8_MIN || parsed_key > INT8_MAX) {
+                fprintf(stderr, "Key value out of range\n");
                 return -1;
             }
+
+            options->key = parsed_key;
+
             break;
         case 'p':
             // Mode of the cipher
@@ -46,6 +58,7 @@ int argparse(int argc, char * const argv[], progopts_t *options)
             break;
         case 'h':
             print_help(argv[0]);
+            options->help_flag = 1;
             return 0;
             break;
         default:
