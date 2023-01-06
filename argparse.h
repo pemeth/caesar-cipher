@@ -1,3 +1,6 @@
+#ifndef ARGPARSE_H
+#define ARGPARSE_H
+
 #include <errno.h>
 #include <getopt.h>
 #include <stdlib.h>
@@ -83,3 +86,5 @@ int argparse(int argc, char * const argv[], progopts_t *options)
 
     return 0;
 }
+
+#endif /* ARGPARSE_H */
