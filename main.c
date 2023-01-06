@@ -10,7 +10,7 @@
 #define CAP_MASK 0xE0           // 0b11100000
 #define LETTER_MASK ~CAP_MASK   // 0b00011111
 
-int ceasar_printable(int8_t key)
+int caesar_printable(int8_t key)
 {
     char input;
     char encoded;
@@ -40,7 +40,7 @@ int ceasar_printable(int8_t key)
     return 0;
 }
 
-int ceasar_alpha(int8_t key)
+int caesar_alpha(int8_t key)
 {
     char input;
     char encoded;
@@ -93,9 +93,9 @@ int main(int argc, char* const argv[])
     }
 
     if (options.alphabet_toggle == 'a') {
-        ceasar_alpha(options.key);
+        caesar_alpha(options.key);
     } else { /* options.alphabet_toggle == 'p' */
-        ceasar_printable(options.key);
+        caesar_printable(options.key);
     }
 
     return 0;

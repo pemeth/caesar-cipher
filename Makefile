@@ -1,6 +1,6 @@
 CC := gcc
 FLAGS := -Werror -pedantic -Wall
-NAME := ceasar
+NAME := caesar
 SRC_DIR := ./
 BUILD_DIR := ./bin
 SRCS := $(wildcard ./*.c)

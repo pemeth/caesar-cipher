@@ -13,7 +13,7 @@ typedef struct progopts
 void print_help(char * const binary_name)
 {
     printf("Usage: %s [-k key] [-p]\n", binary_name);
-    printf("Encode a message via the ceasar cipher with the specified key.\n");
+    printf("Encode a message via the Caesar cipher with the specified key.\n");
     printf("\n");
     printf("Encodes only characters of the alphabet unless -p is specified,\n");
     printf("in which case all printable characters are encoded.\n");
