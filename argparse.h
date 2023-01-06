@@ -8,11 +8,12 @@ typedef struct progopts
     int8_t key;             //!< Key for the cipher
     char alphabet_toggle;   //!< Toggles alphabet / printable characters
     uint8_t help_flag;      //!< Set if help is printed
+    char codec_toggle;      //!< Set encoder / decoder beaviour
 } progopts_t;
 
 void print_help(char * const binary_name)
 {
-    printf("Usage: %s [-k key] [-p]\n", binary_name);
+    printf("Usage: %s [-k key] [-p] [-e | -d]\n", binary_name);
     printf("Encode a message via the Caesar cipher with the specified key.\n");
     printf("\n");
     printf("Encodes only characters of the alphabet unless -p is specified,\n");
@@ -24,6 +25,8 @@ void print_help(char * const binary_name)
         INT8_MAX
     );
     printf("  -p\t\tuse all printable ASCII characters as alphabet\n");
+    printf("  -e\t\tencode with specified key - this is the default\n");
+    printf("  -d\t\tdecode with specified key that was used for encoding\n");
 }
 
 int argparse(int argc, char * const argv[], progopts_t *options)
@@ -32,7 +35,7 @@ int argparse(int argc, char * const argv[], progopts_t *options)
     int const base = 10;
     char *endptr;
 
-    while ((opt = getopt(argc, argv, "hk:p")) != -1) {
+    while ((opt = getopt(argc, argv, "hk:pde")) != -1) {
         switch (opt)
         {
         case 'k':
@@ -55,6 +58,14 @@ int argparse(int argc, char * const argv[], progopts_t *options)
         case 'p':
             // Mode of the cipher
             options->alphabet_toggle = 'p';
+            break;
+        case 'e':
+            // Encode
+            options->codec_toggle = 'e';
+            break;
+        case 'd':
+            // Decode
+            options->codec_toggle = 'd';
             break;
         case 'h':
             print_help(argv[0]);

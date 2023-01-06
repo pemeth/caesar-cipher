@@ -17,13 +17,11 @@ int caesar_printable(int8_t key)
     size_t const input_len = 1;
     size_t const input_num = 1;
 
-    key = key % PRINTABLE_SIZE;
-
     while (fread(&input, input_len, input_num, stdin) == input_len) {
         encoded = input; // TODO it is possible to use only one variable
 
         if (input >= 32 && input <= 126) {
-            // Printables except <space>
+            // Printables
 
             // Normalize to 0-indexed and shift by key
             char const input_normalized = input - PRINTABLE_START;
@@ -46,8 +44,6 @@ int caesar_alpha(int8_t key)
     char encoded;
     size_t const input_len = 1;
     size_t const input_num = 1;
-
-    key = key % ALPHA_SIZE;
 
     while (fread(&input, input_len, input_num, stdin) == input_len) {
         encoded = input;
@@ -74,9 +70,32 @@ int caesar_alpha(int8_t key)
     return 0;
 }
 
+int caesar(int8_t key, char alphabet, char codec_toggle)
+{
+    // Calculate key module based on alphabet used
+    int key_mod = alphabet == 'a' ? key % ALPHA_SIZE : key % PRINTABLE_SIZE;
+
+    // If the -d option was entered, find the reverse key to entered key
+    key = codec_toggle == 'd' ? key_mod * (-1) : key_mod;
+
+    // Encode based on alphabet
+    if (alphabet == 'a') {
+        caesar_alpha(key);
+    } else { /* alphabet == 'p' */
+        caesar_printable(key);
+    }
+
+    return 0;
+}
+
 int main(int argc, char* const argv[])
 {
-    progopts_t options = { .alphabet_toggle='a', .key=0 };
+    progopts_t options = {
+        .alphabet_toggle='a',
+        .key=0,
+        .help_flag=0,
+        .codec_toggle='e'
+    };
 
     int const argpase_retval = argparse(argc, argv, &options);
     if (argpase_retval < 0) {
@@ -92,11 +111,7 @@ int main(int argc, char* const argv[])
         options.key = 1;
     }
 
-    if (options.alphabet_toggle == 'a') {
-        caesar_alpha(options.key);
-    } else { /* options.alphabet_toggle == 'p' */
-        caesar_printable(options.key);
-    }
+    caesar(options.key, options.alphabet_toggle, options.codec_toggle);
 
     return 0;
 }
